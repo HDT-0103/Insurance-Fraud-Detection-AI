@@ -20,8 +20,6 @@ from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
 from sklearn.metrics import auc
 
-import shap
-
 def balance_data(x_train, y_train):
     sm = SMOTE(random_state=42)
     x_res, y_res = sm.fit_resample(x_train, y_train)
@@ -159,6 +157,12 @@ def plot_all_curves(model, x_test, y_test):
 
 def interpret_with_shap(model, x_train, x_test):
     print("--- 🔍 Interpreting Model with SHAP ---")
+    try:
+        import shap
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "SHAP is required for interpretability. Install it with: `pip install shap`."
+        ) from exc
     explainer = shap.TreeExplainer(model)
 
     shap_values = explainer(x_test)
@@ -167,6 +171,5 @@ def interpret_with_shap(model, x_train, x_test):
     plt.title("SHAP Summary Plot - Feature Importance")
     plt.show()
     return explainer, shap_values
-
 
 
