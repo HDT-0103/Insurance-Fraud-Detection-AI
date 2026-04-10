@@ -87,3 +87,60 @@ python main.py
 
 - This project is for educational/demo purposes; real claims systems require strong privacy controls, monitoring, and human-in-the-loop review.
 - Always validate models on unseen data, monitor drift, and periodically retrain as fraud patterns evolve.
+
+## Deploy (VPS + custom domain + HTTPS)
+
+This repo includes a production-friendly setup using **Docker Compose** + **Caddy** (automatic Let's Encrypt HTTPS).
+
+### 0) Prereqs
+
+- A VPS (Ubuntu recommended) with a public IPv4 address
+- A domain you control (e.g. `fraud.yourdomain.com`)
+- Open inbound ports **80** and **443** to the VPS (cloud firewall + OS firewall)
+
+### 1) Point DNS to your server
+
+Create a DNS **A record**:
+
+- `yourdomain.com` (or `fraud.yourdomain.com`) → `<your_vps_public_ip>`
+
+Wait for DNS to propagate (usually minutes; sometimes longer).
+
+### 2) Get the code onto the VPS
+
+On the VPS:
+
+```bash
+git clone <your-repo-url>
+cd Insurance_Project
+```
+
+### 3) Configure domain + TLS email
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set:
+
+- `DOMAIN=yourdomain.com`
+- `ACME_EMAIL=you@yourdomain.com`
+
+### 4) Start with Docker Compose
+
+```bash
+docker compose up -d --build
+```
+
+Your app should be live at:
+
+- `https://yourdomain.com`
+
+### Useful commands
+
+```bash
+docker compose ps
+docker compose logs -f --tail=200
+docker compose pull
+docker compose up -d --build
+```
